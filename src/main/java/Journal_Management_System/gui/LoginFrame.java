@@ -1,5 +1,6 @@
 package main.java.Journal_Management_System.gui;
 
+import main.java.Journal_Management_System.dao.UserDAO;
 import main.java.Journal_Management_System.server.ClientHandler;
 import main.java.Journal_Management_System.server.Server;
 import main.java.Journal_Management_System.util.Request;
@@ -11,6 +12,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +24,7 @@ public class LoginFrame extends JFrame {
     private JButton btnLogin, btnRegister, btnReset;
     private JLabel lblAvatar;
     private static final int serverPort = 9999; // 替换为您的服务器监听的端口
+    UserDAO UserDAO;
 
     public LoginFrame() throws IOException {
         setTitle("认证 - 个人日志管理系统");
@@ -40,28 +44,6 @@ public class LoginFrame extends JFrame {
         lblAvatar.setIcon(new ImageIcon(scaledImage));
         add(lblAvatar, BorderLayout.NORTH);
         //TODO: 后端传入头像
-//        txtUsername.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                String username = txtUsername.getText();
-//                String avatarPath = getAvatarPathByUsername(username);
-//
-//                if (avatarPath != null) {
-//                    // 加载并显示头像
-//                    try {
-//                        BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
-//                        Image scaledImage = avatarImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-//                        lblAvatar.setIcon(new ImageIcon(scaledImage));
-//                    } catch (IOException ex) {
-//                        lblAvatar.setText("Avatar not found");
-//                    }
-//                } else {
-//                    lblAvatar.setIcon(null); // 如果没有头像，清除之前的显示
-//                    lblAvatar.setText("No avatar");
-//                }
-//            }
-//        });
-
 
         // 创建中央面板放置登录表单
         JPanel centerPanel = new JPanel(new GridBagLayout());
@@ -72,7 +54,7 @@ public class LoginFrame extends JFrame {
         // 用户名输入框
         constraints.gridx = 0;
         constraints.gridy = 0;
-        centerPanel.add(new JLabel("Username:"), constraints);
+        centerPanel.add(new JLabel("用户名:"), constraints);
         txtUsername = new JTextField(20);
         constraints.gridx = 1;
         centerPanel.add(txtUsername, constraints);
@@ -80,7 +62,7 @@ public class LoginFrame extends JFrame {
         // 密码输入框
         constraints.gridx = 0;
         constraints.gridy = 1;
-        centerPanel.add(new JLabel("Password:"), constraints);
+        centerPanel.add(new JLabel("密码:"), constraints);
         txtPassword = new JPasswordField(20);
         constraints.gridx = 1;
         centerPanel.add(txtPassword, constraints);
@@ -89,15 +71,15 @@ public class LoginFrame extends JFrame {
         constraints.gridx = 0;
         constraints.gridy = 2;
         constraints.gridwidth = 2;
-        btnLogin = new JButton("Login");
+        btnLogin = new JButton("登录");
         centerPanel.add(btnLogin, constraints);
 
         add(centerPanel, BorderLayout.CENTER);
 
         // 创建南区面板放置其他按钮
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        btnRegister = new JButton("Register");
-        btnReset = new JButton("Reset");
+        btnRegister = new JButton("注册");
+        btnReset = new JButton("重置");
         southPanel.add(btnRegister);
         southPanel.add(btnReset);
         add(southPanel, BorderLayout.SOUTH);
@@ -124,10 +106,10 @@ public class LoginFrame extends JFrame {
                         String role = (String) response.getData().get("role");
                         if ("admin".equals(role)) {
                             // 打开 AdminDashboard
-                           //new AdminDashboard().setVisible(true);
+                           new AdminDashboard().setVisible(true);
                         } else {
                             // 打开 UserDashboard
-                            //new UserDashboard().setVisible(true);
+                            new UserDashboard().setVisible(true);
                         }
                         dispose(); // 关闭登录窗口
                     } else {
@@ -136,7 +118,7 @@ public class LoginFrame extends JFrame {
 
                     clientHandler.close();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(LoginFrame.this, "Error connecting to the server");
+                    JOptionPane.showMessageDialog(LoginFrame.this, "无法连接至服务器！");
                     ex.printStackTrace();
                 }
             }
@@ -158,20 +140,44 @@ public class LoginFrame extends JFrame {
                     Response response = clientHandler.receiveResponse();
 
                     if (response.getStatusCode() == 200) {
-                        JOptionPane.showMessageDialog(LoginFrame.this, "Registration successful");
+                        JOptionPane.showMessageDialog(LoginFrame.this, "注册成功！");
                     } else {
                         JOptionPane.showMessageDialog(LoginFrame.this, response.getMessage());
                     }
 
                     clientHandler.close();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(LoginFrame.this, "Error connecting to the server");
+                    JOptionPane.showMessageDialog(LoginFrame.this, "无法连接至服务器！");
                     ex.printStackTrace();
                 }
             }
         });
+//        txtUsername.addFocusListener(new FocusAdapter() {
+//            @Override
+//            public void focusLost(FocusEvent e) {
+//                String username = txtUsername.getText();
+//                String avatarPath = UserDAO.getAvatarPath(username);
+//                updateAvatar(avatarPath);
+//            }
+//        });
 
-
+    }
+    private void updateAvatar(String avatarPath) {
+        if (avatarPath != null && !avatarPath.isEmpty()) {
+            try {
+                BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
+                Image scaledImage = avatarImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                lblAvatar.setIcon(new ImageIcon(scaledImage));
+            } catch (IOException ex) {
+                lblAvatar.setIcon(null);
+                lblAvatar.setText("No avatar");
+                // 处理异常，如显示默认头像
+            }
+        } else {
+            lblAvatar.setIcon(null);
+            lblAvatar.setText("No avatar");
+            // 可能显示一个默认头像
+        }
     }
 
     public static void main(String[] args) {

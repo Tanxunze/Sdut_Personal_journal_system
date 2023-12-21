@@ -11,6 +11,22 @@ public class UserDAO {
     public UserDAO(Connection connection) {
         this.connection = connection;
     }
+    //获取头像
+    public String getAvatarPath(String username) {
+        String sql = "SELECT avatar_path FROM users WHERE username = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("avatar_path");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "src/main/java/resources/imges/avatar.jpg"; // 返回一个默认头像路径
+    }
+
 
     // 验证用户凭证
     public boolean validateUser(String username, String password) {
