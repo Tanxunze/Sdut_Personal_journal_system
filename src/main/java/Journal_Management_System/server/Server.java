@@ -1,7 +1,9 @@
 package main.java.Journal_Management_System.server;
+import main.java.Journal_Management_System.util.DatabaseConnection;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
 
 public class Server {
     private int port;
@@ -15,13 +17,20 @@ public class Server {
             System.out.println("Server is listening on port " + port);
 
             while (true) {
-                Socket socket = serverSocket.accept();
-                System.out.println("New client connected");
+                try {
+                    Socket clientSocket = serverSocket.accept();
+                    System.out.println("New client connected");
 
-                ServerThread serverThread = new ServerThread(socket);
-                new Thread(serverThread).start();
+                    // 使用 DatabaseConnection 工厂类获取数据库连接
+                    Connection connection = DatabaseConnection.getCon();
+
+                    // 为每个客户端连接创建一个新的线程
+                    ServerThread serverThread = new ServerThread(clientSocket, connection);
+                    new Thread(serverThread).start();
+                } catch (Exception e) {
+                    System.out.println("Error handling client connection: " + e.getMessage());
+                }
             }
-
         } catch (Exception e) {
             System.out.println("Server exception: " + e.getMessage());
             e.printStackTrace();
@@ -29,9 +38,8 @@ public class Server {
     }
 
     public static void main(String[] args) {
-        int port = 1234; // 可以是任何未被占用的端口号
+        int port = 9999; // 服务器监听的端口号
         Server server = new Server(port);
         server.start();
     }
 }
-

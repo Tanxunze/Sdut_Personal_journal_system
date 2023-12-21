@@ -9,7 +9,7 @@ public class DatabaseConnection {
     static {
 //        InputStream in=CF.class.getClassLoader().getResourceAsStream("config/db.properties");
         try{
-            pro.load(new FileReader("config/db.properties"));
+            pro.load(new FileReader("src/main/java/config/db.properties"));
 //            in.close();
             Class.forName(pro.getProperty("m.driver"));
         }catch (Exception e)
