@@ -1,14 +1,14 @@
 package main.java.Journal_Management_System.gui;
 
+import main.java.Journal_Management_System.dao.DiaryDAO;
+import main.java.Journal_Management_System.dao.DiaryEntry;
+import main.java.Journal_Management_System.util.DatabaseConnection;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JournalEditor extends JFrame {
     private JTextArea textArea;
@@ -16,15 +16,20 @@ public class JournalEditor extends JFrame {
     private JLabel lastPublishedLabel; // 新增显示最后发布时间的标签
     private JButton publishButton, deleteButton, dashboardButton, viewerButton;
     private JLabel nameLabel, avatarLabel;
-
-    public JournalEditor() {
+    private String username;
+    private Integer selectedDiaryId;
+    private Connection connection= DatabaseConnection.getCon();
+    private DiaryDAO diaryDAO=new DiaryDAO(connection);
+    public JournalEditor(String username,int selectedDiaryId) throws SQLException {
+        this.selectedDiaryId=selectedDiaryId;
+        this.username=username;
         setTitle("Editor");
         setSize(700, 500); // 调整窗口大小
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //setAlwaysOnTop(true);
-
+        // 根据 selectedDiaryId 判断是新建日志还是编辑现有日志
 
         // 顶部：用户信息和日志标题
         JPanel topPanel = new JPanel();
@@ -60,7 +65,10 @@ public class JournalEditor extends JFrame {
         bottomPanel.add(lastPublishedLabel);
         add(bottomPanel, BorderLayout.SOUTH);
 
-
+        if (selectedDiaryId != -1) {
+            // 加载并显示现有日志的数据
+            loadDiaryData(selectedDiaryId);
+        }
         // 按钮监听器
         publishButton.addActionListener(new ActionListener() {
             @Override
@@ -72,14 +80,22 @@ public class JournalEditor extends JFrame {
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                deleteLog();
+                try {
+                    deleteLog();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
         dashboardButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                goToDashboard();
+                try {
+                    goToDashboard();
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
@@ -92,21 +108,76 @@ public class JournalEditor extends JFrame {
 
 
     }
+    private void loadDiaryData(int diaryId) {
+        // 从数据库加载日志数据
+        DiaryEntry diaryEntry = diaryDAO.getDiaryById(diaryId);
+
+        if (diaryEntry != null) {
+            titleField.setText(diaryEntry.getTitle());
+            textArea.setText(diaryEntry.getContent());
+            lastPublishedLabel.setText(diaryEntry.getLastCommitTime());
+        }
+    }
 
     private void publishLog() {
+        String logTitle = titleField.getText();
         String logContent = textArea.getText();
+        DiaryDAO diaryDAO = new DiaryDAO(connection);
+        int userId = diaryDAO.getUserIdByUsername(username);
+
+        // 检查是新建日志还是更新现有日志
+        if (selectedDiaryId == -1) {
+            // 创建新日志
+            String currentTime = new Timestamp(System.currentTimeMillis()).toString();
+            DiaryEntry newDiaryEntry = new DiaryEntry(
+                    -1, // 对于新日志，ID 可以是 -1 或其他占位值
+                    userId,
+                    logTitle,
+                    logContent,
+                    currentTime, // 创建时间
+                    currentTime  // 最后更新时间
+            );
+            diaryDAO.addDiary(newDiaryEntry);
+            JOptionPane.showMessageDialog(this, "日志已创建");
+        } else {
+            // 更新现有日志
+            DiaryEntry existingDiaryEntry = new DiaryEntry(
+                    selectedDiaryId, // 现有日志的ID
+                    userId,
+                    logTitle,
+                    logContent,
+                    null, // 对于更新，创建时间通常不变
+                    new Timestamp(System.currentTimeMillis()).toString() // 更新最后更新时间
+            );
+            diaryDAO.updateDiary(existingDiaryEntry);
+            JOptionPane.showMessageDialog(this, "日志已更新");
+        }
+
     }
 
-    private void deleteLog() {
-        textArea.setText(""); // 清空文本框内容
-        // 这里需要一个标识符来确定要删除的数据库记录，比如日志ID
-        // String logId = ...;
-        // deleteLogFromDatabase(logId);
+    private void deleteLog() throws SQLException {
+        if (selectedDiaryId != -1) {
+            int confirm = JOptionPane.showConfirmDialog(this, "确定要删除这篇日志吗?", "确认", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                diaryDAO.deleteDiary(selectedDiaryId);
+                JOptionPane.showMessageDialog(this, "日志已删除");
+                // 关闭编辑器或清除表单
+                clearForm();
+                new UserDashboard(username).setVisible(true);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "没有选定的日志可以删除");
+        }
+    }
+
+    private void clearForm() {
+        titleField.setText("");
+        textArea.setText("");
     }
 
 
-        private void goToDashboard() {
-        new UserDashboard().setVisible(true);
+        private void goToDashboard() throws SQLException {
+        new AdminDashboard(username).setVisible(true);
         dispose();
     }
 
@@ -117,7 +188,7 @@ public class JournalEditor extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            new JournalEditor().setVisible(true);
+            //new JournalEditor().setVisible(true);
         });
     }
 }
