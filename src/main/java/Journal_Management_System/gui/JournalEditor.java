@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,9 +20,10 @@ public class JournalEditor extends JFrame {
     public JournalEditor() {
         setTitle("Editor");
         setSize(700, 500); // 调整窗口大小
-        //setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setAlwaysOnTop(true);
 
 
         // 顶部：用户信息和日志标题
@@ -103,8 +105,9 @@ public class JournalEditor extends JFrame {
     }
 
 
-    private void goToDashboard() {
-        // 跳转到Dashboard界面的逻辑
+        private void goToDashboard() {
+        new UserDashboard().setVisible(true);
+        dispose();
     }
 
     private void goToViewer() {
@@ -113,11 +116,8 @@ public class JournalEditor extends JFrame {
     //TODO:连接到数据库
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new JournalEditor().setVisible(true);
-            }
+        SwingUtilities.invokeLater(() -> {
+            new JournalEditor().setVisible(true);
         });
     }
 }

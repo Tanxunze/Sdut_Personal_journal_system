@@ -43,7 +43,6 @@ public class LoginFrame extends JFrame {
         Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // 缩放图片
         lblAvatar.setIcon(new ImageIcon(scaledImage));
         add(lblAvatar, BorderLayout.NORTH);
-        //TODO: 后端传入头像
 
         // 创建中央面板放置登录表单
         JPanel centerPanel = new JPanel(new GridBagLayout());
@@ -85,7 +84,6 @@ public class LoginFrame extends JFrame {
         add(southPanel, BorderLayout.SOUTH);
 
         // 事件监听器
-        // TODO: 添加按钮的事件处理逻辑
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
