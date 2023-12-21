@@ -3,6 +3,8 @@ package main.java.Journal_Management_System.gui;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 class ImagePanel2 extends JPanel {
     private Image image;
@@ -134,6 +136,21 @@ public class UserDashboard extends JFrame {
         JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomeDialog.add(imageLabel, BorderLayout.CENTER);
+        JButton okButton = new JButton("È·¶¨");
+        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
+        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcomeDialog.dispose();
+                setVisible(true); // Show the main UserDashboard frame
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
+        buttonPanel.add(okButton);
+        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
 
         welcomeDialog.setVisible(true);
     }
