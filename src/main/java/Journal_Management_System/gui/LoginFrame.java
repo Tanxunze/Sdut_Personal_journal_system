@@ -33,6 +33,29 @@ public class LoginFrame extends JFrame {
         Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // 缩放图片
         lblAvatar.setIcon(new ImageIcon(scaledImage));
         add(lblAvatar, BorderLayout.NORTH);
+        //TODO: 后端传入头像
+//        txtUsername.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                String username = txtUsername.getText();
+//                String avatarPath = getAvatarPathByUsername(username);
+//
+//                if (avatarPath != null) {
+//                    // 加载并显示头像
+//                    try {
+//                        BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
+//                        Image scaledImage = avatarImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+//                        lblAvatar.setIcon(new ImageIcon(scaledImage));
+//                    } catch (IOException ex) {
+//                        lblAvatar.setText("Avatar not found");
+//                    }
+//                } else {
+//                    lblAvatar.setIcon(null); // 如果没有头像，清除之前的显示
+//                    lblAvatar.setText("No avatar");
+//                }
+//            }
+//        });
+
 
         // 创建中央面板放置登录表单
         JPanel centerPanel = new JPanel(new GridBagLayout());
