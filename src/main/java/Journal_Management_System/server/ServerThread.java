@@ -35,10 +35,10 @@ public class ServerThread implements Runnable {
                     response.setStatusCode(200);
                     String role = userDAO.getUserRole(username);
                     response.addData("role", role);
-                    response.setMessage("Login successful");
+                    response.setMessage("登录成功！");
                 } else {
                     response.setStatusCode(401);
-                    response.setMessage("Invalid username or password");
+                    response.setMessage("用户名或密码无效！");
                 }
             }
 
@@ -49,10 +49,10 @@ public class ServerThread implements Runnable {
 
                 if (userDAO.addUser(username, password)) {
                     response.setStatusCode(200);
-                    response.setMessage("Registration successful");
+                    response.setMessage("注册成功！");
                 } else {
                     response.setStatusCode(500);
-                    response.setMessage("Registration failed");
+                    response.setMessage("注册失败，请检查连接！");
                 }
             }
 

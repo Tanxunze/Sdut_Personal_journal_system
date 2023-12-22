@@ -29,7 +29,6 @@ public class Request implements Serializable {
         this.data = data;
     }
 
-    // Convenience method to add data
     public void addData(String key, Object value) {
         data.put(key, value);
     }

@@ -7,10 +7,8 @@ import java.util.Properties;
 public class DatabaseConnection {
     static Properties pro=new Properties();
     static {
-//        InputStream in=CF.class.getClassLoader().getResourceAsStream("config/db.properties");
         try{
             pro.load(new FileReader("src/main/java/config/db.properties"));
-//            in.close();
             Class.forName(pro.getProperty("m.driver"));
         }catch (Exception e)
         {

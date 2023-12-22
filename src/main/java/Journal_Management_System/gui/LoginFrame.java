@@ -102,16 +102,20 @@ public class LoginFrame extends JFrame {
                     ClientHandler clientHandler = new ClientHandler("localhost", serverPort);
                     clientHandler.sendRequest(request);
                     Response response = clientHandler.receiveResponse();
+                    //System.out.println("登录请求已发送");
 
                     if (response.getStatusCode() == 200) {
                         String role = (String) response.getData().get("role");
                         String avatarPath= UserDAO.getAvatarPath(username);
+                        //System.out.println("登录请求已返回");
                         if ("admin".equals(role)) {
+                            System.out.println(username+" 为 "+role);
                             // 打开 AdminDashboard
                             showWelcomeDialog(username,avatarPath);
                            new AdminDashboard(username).setVisible(true);
                         } else {
                             // 打开 UserDashboard
+                            System.out.println(username+" 为 "+role);
                             showWelcomeDialog(username,avatarPath);
                             new UserDashboard(username).setVisible(true);
                         }
@@ -137,14 +141,17 @@ public class LoginFrame extends JFrame {
                 request.setRequestType("register");
                 request.addData("username", username);
                 request.addData("password", password);
+                //System.out.println("注册请求已发送");
 
                 try {
                     ClientHandler clientHandler = new ClientHandler("localhost", serverPort);
                     clientHandler.sendRequest(request);
                     Response response = clientHandler.receiveResponse();
+                    //System.out.println("注册请求已返回");
 
                     if (response.getStatusCode() == 200) {
                         JOptionPane.showMessageDialog(LoginFrame.this, "注册成功！");
+                        //System.out.println(username+"注册成功");
                     } else {
                         JOptionPane.showMessageDialog(LoginFrame.this, response.getMessage());
                     }
@@ -156,6 +163,7 @@ public class LoginFrame extends JFrame {
                 }
             }
         });
+        //监听用户名文本框
         txtUsername.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -181,7 +189,7 @@ public class LoginFrame extends JFrame {
             lblAvatar.setText("No avatar");
         }
     }
-
+    //欢迎弹窗
     private void showWelcomeDialog(String userName, String avatarPath) {
         JDialog welcomeDialog = new JDialog(this, "欢迎", true);
         welcomeDialog.setLayout(new BorderLayout());

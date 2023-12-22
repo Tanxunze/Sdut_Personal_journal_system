@@ -14,12 +14,12 @@ public class Server {
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
+            System.out.println("Listening on " + port);
 
             while (true) {
                 try {
                     Socket clientSocket = serverSocket.accept();
-                    System.out.println("New client connected");
+                    System.out.println("客户端已连接");
 
                     // 使用 DatabaseConnection 工厂类获取数据库连接
                     Connection connection = DatabaseConnection.getCon();
