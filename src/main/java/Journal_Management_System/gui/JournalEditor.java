@@ -17,8 +17,8 @@ import java.sql.*;
 
 public class JournalEditor extends JFrame {
     private JTextArea textArea;
-    private JTextField titleField; // 新增日志标题输入框
-    private JLabel lastPublishedLabel; // 新增显示最后发布时间的标签
+    private JTextField titleField;
+    private JLabel lastPublishedLabel;
     private JButton publishButton, deleteButton, dashboardButton, viewerButton;
     private JLabel nameLabel, avatarLabel;
     private String username;
@@ -30,7 +30,7 @@ public class JournalEditor extends JFrame {
         this.selectedDiaryId=selectedDiaryId;
         this.username=username;
         setTitle("Editor");
-        setSize(700, 500); // 调整窗口大小
+        setSize(700, 500);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,7 +43,7 @@ public class JournalEditor extends JFrame {
         String avatarPath= userDAO.getAvatarPath(username);
         BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
         Image scaledImage = avatarImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-        avatarLabel = new JLabel(new ImageIcon(scaledImage)); // 替换为实际头像路径
+        avatarLabel = new JLabel(new ImageIcon(scaledImage));
         nameLabel = new JLabel(username);
         titleField = new JTextField("日志标题");
         topPanel.add(avatarLabel);
@@ -139,7 +139,7 @@ public class JournalEditor extends JFrame {
             // 创建新日志
             String currentTime = new Timestamp(System.currentTimeMillis()).toString();
             DiaryEntry newDiaryEntry = new DiaryEntry(
-                    -1, // 对于新日志，ID 可以是 -1 或其他占位值
+                    -1,
                     userId,
                     logTitle,
                     logContent,
@@ -156,7 +156,7 @@ public class JournalEditor extends JFrame {
                     userId,
                     logTitle,
                     logContent,
-                    null, // 对于更新，创建时间通常不变
+                    null,
                     new Timestamp(System.currentTimeMillis()).toString() // 更新最后更新时间
             );
             diaryDAO.updateDiary(existingDiaryEntry);
@@ -172,7 +172,6 @@ public class JournalEditor extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 diaryDAO.deleteDiary(selectedDiaryId);
                 JOptionPane.showMessageDialog(this, "日志已删除");
-                // 关闭编辑器或清除表单
                 clearForm();
                 if(userDAO.getUserRole(username).equals("admin")){
                     new AdminDashboard(username).setVisible(true);
@@ -199,10 +198,6 @@ public class JournalEditor extends JFrame {
         dispose();
     }
 
-//    private void goToViewer() {
-//        // 跳转到Viewer界面的逻辑
-//    }
-    //TODO:连接到数据库
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
