@@ -174,7 +174,14 @@ public class JournalEditor extends JFrame {
                 JOptionPane.showMessageDialog(this, "日志已删除");
                 // 关闭编辑器或清除表单
                 clearForm();
-                new UserDashboard(username).setVisible(true);
+                if(userDAO.getUserRole(username).equals("admin")){
+                    new AdminDashboard(username).setVisible(true);
+                    dispose();
+                }
+                else{
+                    new UserDashboard(username).setVisible(true);
+                    dispose();
+                }
             }
         } else {
             JOptionPane.showMessageDialog(this, "没有选定的日志可以删除");
