@@ -31,7 +31,7 @@ class ImagePanel1 extends JPanel {
 
 public class AdminDashboard extends JFrame {
     private DefaultTableModel diaryModel; // 用于存储日志信息的表格模型
-    private JTable table; // 作为成员变量声明
+    private JTable table;
     private String username;
     Connection connection= DatabaseConnection.getCon();
     private UserDAO userDAO=new UserDAO(connection);
@@ -141,7 +141,6 @@ public class AdminDashboard extends JFrame {
             new JournalEditor(username,selectedDiaryId).setVisible(true);
             dispose();
         } else {
-            // 没有选中任何行的处理
         }
     }
 

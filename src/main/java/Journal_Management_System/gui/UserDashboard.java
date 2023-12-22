@@ -31,7 +31,7 @@ class ImagePanel2 extends JPanel {
 
 public class UserDashboard extends JFrame {
     private DefaultTableModel diaryModel; // 用于存储日志信息的表格模型
-    private JTable table; // 作为成员变量声明
+    private JTable table;
     private String username;
     Connection connection= DatabaseConnection.getCon();
     private UserDAO userDAO=new UserDAO(connection);
@@ -126,15 +126,12 @@ public class UserDashboard extends JFrame {
     }
 
     private void editDiary(int selectedRow) throws SQLException, IOException {
-        // TODO: 实现编辑日志的逻辑
-        // 例如，打开一个新的窗口或对话框，用于编辑选中的日志
         if (selectedRow != -1) {
             int selectedDiaryId = (Integer) table.getModel().getValueAt(selectedRow, 0); // 0 是日志ID所在的列
             DiaryEntry selectedDiary = diaryDAO.getDiaryById(selectedDiaryId);
             new JournalEditor(username,selectedDiaryId).setVisible(true);
             dispose();
         } else {
-            // 没有选中任何行的处理
         }
     }
 
