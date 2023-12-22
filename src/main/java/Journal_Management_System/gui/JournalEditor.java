@@ -60,7 +60,7 @@ public class JournalEditor extends JFrame {
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         publishButton = new JButton("保存");
         deleteButton = new JButton("删除");
-        dashboardButton = new JButton("Dashboard");
+        dashboardButton = new JButton("返回后台");
         //viewerButton = new JButton("Viewer");
         rightPanel.add(publishButton);
         rightPanel.add(deleteButton);
