@@ -126,7 +126,7 @@ public class LoginFrame extends JFrame {
 
                     clientHandler.close();
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(LoginFrame.this, "无法连接至服务器！");
+                    JOptionPane.showMessageDialog(LoginFrame.this, "账号或密码为空或服务器错误！");
                     ex.printStackTrace();
                 }
             }
