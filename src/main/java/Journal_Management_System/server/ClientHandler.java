@@ -31,7 +31,6 @@ public class ClientHandler {
         return (Response) in.readObject();
     }
 
-    // Remember to close connections
     public void close() {
         try {
             in.close();
