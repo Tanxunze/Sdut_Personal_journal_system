@@ -2,12 +2,17 @@ package main.java.Journal_Management_System.gui;
 
 import main.java.Journal_Management_System.dao.DiaryDAO;
 import main.java.Journal_Management_System.dao.DiaryEntry;
+import main.java.Journal_Management_System.dao.UserDAO;
 import main.java.Journal_Management_System.util.DatabaseConnection;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
 
 public class JournalEditor extends JFrame {
@@ -20,7 +25,8 @@ public class JournalEditor extends JFrame {
     private Integer selectedDiaryId;
     private Connection connection= DatabaseConnection.getCon();
     private DiaryDAO diaryDAO=new DiaryDAO(connection);
-    public JournalEditor(String username,int selectedDiaryId) throws SQLException {
+    private UserDAO userDAO=new UserDAO(connection);
+    public JournalEditor(String username,int selectedDiaryId) throws SQLException, IOException {
         this.selectedDiaryId=selectedDiaryId;
         this.username=username;
         setTitle("Editor");
@@ -34,8 +40,11 @@ public class JournalEditor extends JFrame {
         // 顶部：用户信息和日志标题
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-        avatarLabel = new JLabel(new ImageIcon("path/to/user/avatar.jpg")); // 替换为实际头像路径
-        nameLabel = new JLabel("用户名"); // 替换为实际用户名
+        String avatarPath= userDAO.getAvatarPath(username);
+        BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
+        Image scaledImage = avatarImage.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+        avatarLabel = new JLabel(new ImageIcon(scaledImage)); // 替换为实际头像路径
+        nameLabel = new JLabel(username);
         titleField = new JTextField("日志标题");
         topPanel.add(avatarLabel);
         topPanel.add(nameLabel);

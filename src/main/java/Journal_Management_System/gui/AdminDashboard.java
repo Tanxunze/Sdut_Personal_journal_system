@@ -10,6 +10,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -55,7 +56,7 @@ public class AdminDashboard extends JFrame {
         publishDiaryButton.addActionListener(e -> {
             try {
                 showPublishDialog();
-            } catch (SQLException ex) {
+            } catch (SQLException | IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -64,7 +65,7 @@ public class AdminDashboard extends JFrame {
         topPanel.add(viewDiariesButton);
         topPanel.add(publishDiaryButton);
 
-        ImagePanel2 imagePanel = new ImagePanel2("src/main/java/resources/imges/BackGround_Dashboard.jpg");
+        ImagePanel2 imagePanel = new ImagePanel2("src/main/java/resources/images/BackGround_Dashboard.jpg");
         getContentPane().add(topPanel, BorderLayout.NORTH);
         getContentPane().add(imagePanel, BorderLayout.CENTER);
     }
@@ -115,7 +116,7 @@ public class AdminDashboard extends JFrame {
                 // 打开编辑日志的窗口或对话框
                 try {
                     editDiary(selectedRow);
-                } catch (SQLException ex) {
+                } catch (SQLException | IOException ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
@@ -131,7 +132,7 @@ public class AdminDashboard extends JFrame {
         diariesDialog.setVisible(true);
     }
 
-    private void editDiary(int selectedRow) throws SQLException {
+    private void editDiary(int selectedRow) throws SQLException, IOException {
         // TODO: 实现编辑日志的逻辑
         // 例如，打开一个新的窗口或对话框，用于编辑选中的日志
         if (selectedRow != -1) {
@@ -145,7 +146,7 @@ public class AdminDashboard extends JFrame {
     }
 
 
-    private void showPublishDialog() throws SQLException {
+    private void showPublishDialog() throws SQLException, IOException {
         new JournalEditor(username,-1).setVisible(true);
         dispose();
     }
@@ -185,7 +186,7 @@ public class AdminDashboard extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             //UserDashboard userDashboard = new UserDashboard();
-//            userDashboard.showWelcomeDialog("用户名", "src/main/java/resources/imges/avatar.jpg");
+//            userDashboard.showWelcomeDialog("用户名", "src/main/java/resources/images/avatar.jpg");
             //userDashboard.setVisible(true);
         });
     }

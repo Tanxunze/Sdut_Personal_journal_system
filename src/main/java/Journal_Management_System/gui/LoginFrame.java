@@ -41,7 +41,7 @@ public class LoginFrame extends JFrame {
         lblAvatar.setBorder(new EmptyBorder(100, 0, 0, 0)); // 上边距为10像素
 
         // 创建并添加头像标签到北区
-        BufferedImage originalImage = ImageIO.read(new File("src/main/java/resources/imges/avatar.jpg")); // 加载原始图片
+        BufferedImage originalImage = ImageIO.read(new File("src/main/java/resources/images/avatar.jpg")); // 加载原始图片
         // 调整头像大小
         Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // 缩放图片
         lblAvatar.setIcon(new ImageIcon(scaledImage));
@@ -109,13 +109,13 @@ public class LoginFrame extends JFrame {
                         String avatarPath= UserDAO.getAvatarPath(username);
                         //System.out.println("登录请求已返回");
                         if ("admin".equals(role)) {
-                            System.out.println(username+" 为 "+role);
+                            //System.out.println(username+" 为 "+role);
                             // 打开 AdminDashboard
                             showWelcomeDialog(username,avatarPath);
                            new AdminDashboard(username).setVisible(true);
                         } else {
                             // 打开 UserDashboard
-                            System.out.println(username+" 为 "+role);
+                            //System.out.println(username+" 为 "+role);
                             showWelcomeDialog(username,avatarPath);
                             new UserDashboard(username).setVisible(true);
                         }
@@ -169,24 +169,32 @@ public class LoginFrame extends JFrame {
             public void focusLost(FocusEvent e) {
                 String username = txtUsername.getText();
                 String avatarPath = UserDAO.getAvatarPath(username);
-                updateAvatar(avatarPath);
+                try {
+                    updateAvatar(avatarPath);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
         });
 
     }
-    private void updateAvatar(String avatarPath) {
+    private void updateAvatar(String avatarPath) throws IOException {
         if (avatarPath != null && !avatarPath.isEmpty()) {
             try {
                 BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
                 Image scaledImage = avatarImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
                 lblAvatar.setIcon(new ImageIcon(scaledImage));
             } catch (IOException ex) {
-                lblAvatar.setIcon(null);
-                lblAvatar.setText("No avatar");
+                BufferedImage avatarImage = ImageIO.read(new File("src/main/java/resources/images/avatar.jpg"));
+                Image scaledImage = avatarImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                lblAvatar.setIcon(new ImageIcon(scaledImage));
+                //lblAvatar.setText("No avatar");
             }
         } else {
-            lblAvatar.setIcon(null);
-            lblAvatar.setText("No avatar");
+            BufferedImage avatarImage = ImageIO.read(new File("src/main/java/resources/images/avatar.jpg"));
+            Image scaledImage = avatarImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+            lblAvatar.setIcon(new ImageIcon(scaledImage));
+            //lblAvatar.setText("No avatar");
         }
     }
     //欢迎弹窗
@@ -225,9 +233,7 @@ public class LoginFrame extends JFrame {
         SwingUtilities.invokeLater(() -> {
             try {
                 new LoginFrame().setVisible(true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (SQLException e) {
+            } catch (IOException | SQLException e) {
                 throw new RuntimeException(e);
             }
         });

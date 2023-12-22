@@ -24,7 +24,7 @@ public class UserDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return "src/main/java/resources/imges/avatar.jpg"; // 返回一个默认头像路径
+        return "src/main/java/resources/images/avatar.jpg"; // 返回一个默认头像路径
     }
 
 
