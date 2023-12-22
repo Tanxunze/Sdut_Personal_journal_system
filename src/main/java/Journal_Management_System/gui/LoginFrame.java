@@ -25,7 +25,7 @@ public class LoginFrame extends JFrame {
     private JPasswordField txtPassword;
     private JButton btnLogin, btnRegister, btnReset;
     private JLabel lblAvatar;
-    private static final int serverPort = 9999; // 替换为您的服务器监听的端口
+    private static final int serverPort = 9999;
     Connection connection= DatabaseConnection.getCon();
     UserDAO UserDAO=new UserDAO(connection);
 
@@ -33,17 +33,17 @@ public class LoginFrame extends JFrame {
         setTitle("认证 - 个人日志管理系统");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
-        setLocationRelativeTo(null); // 窗口居中
-        setLayout(new BorderLayout(10, 10)); // 使用BorderLayout
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout(10, 10));
 
         lblAvatar = new JLabel();
         lblAvatar.setHorizontalAlignment(JLabel.CENTER);
-        lblAvatar.setBorder(new EmptyBorder(100, 0, 0, 0)); // 上边距为10像素
+        lblAvatar.setBorder(new EmptyBorder(100, 0, 0, 0));
 
         // 创建并添加头像标签到北区
-        BufferedImage originalImage = ImageIO.read(new File("src/main/java/resources/images/avatar.jpg")); // 加载原始图片
+        BufferedImage originalImage = ImageIO.read(new File("src/main/java/resources/images/avatar.jpg")); //默认
         // 调整头像大小
-        Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH); // 缩放图片
+        Image scaledImage = originalImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
         lblAvatar.setIcon(new ImageIcon(scaledImage));
         add(lblAvatar, BorderLayout.NORTH);
 
@@ -212,20 +212,20 @@ public class LoginFrame extends JFrame {
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomeDialog.add(imageLabel, BorderLayout.CENTER);
         JButton okButton = new JButton("确定");
-        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
-        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
-        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
+        okButton.setPreferredSize(new Dimension(100, 30));
+        okButton.setHorizontalAlignment(SwingConstants.CENTER);
+        okButton.setMargin(new Insets(5, 5, 5, 5));
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 welcomeDialog.dispose();
-                setVisible(true); // Show the main UserDashboard frame
+                setVisible(true);
             }
         });
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.add(okButton);
-        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
+        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH);
 
         welcomeDialog.setVisible(true);
     }
