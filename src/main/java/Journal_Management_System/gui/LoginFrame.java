@@ -2,6 +2,7 @@ package main.java.Journal_Management_System.gui;
 
 import main.java.Journal_Management_System.dao.UserDAO;
 import main.java.Journal_Management_System.server.ClientHandler;
+import main.java.Journal_Management_System.util.DatabaseConnection;
 import main.java.Journal_Management_System.util.Request;
 import main.java.Journal_Management_System.util.Response;
 
@@ -11,9 +12,13 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class LoginFrame extends JFrame {
     private JTextField txtUsername;
@@ -21,9 +26,10 @@ public class LoginFrame extends JFrame {
     private JButton btnLogin, btnRegister, btnReset;
     private JLabel lblAvatar;
     private static final int serverPort = 9999; // 替换为您的服务器监听的端口
-    UserDAO UserDAO;
+    Connection connection= DatabaseConnection.getCon();
+    UserDAO UserDAO=new UserDAO(connection);
 
-    public LoginFrame() throws IOException {
+    public LoginFrame() throws IOException, SQLException {
         setTitle("认证 - 个人日志管理系统");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(800, 600);
@@ -99,12 +105,15 @@ public class LoginFrame extends JFrame {
 
                     if (response.getStatusCode() == 200) {
                         String role = (String) response.getData().get("role");
+                        String avatarPath= UserDAO.getAvatarPath(username);
                         if ("admin".equals(role)) {
                             // 打开 AdminDashboard
+                            showWelcomeDialog(username,avatarPath);
                            new AdminDashboard(username).setVisible(true);
                         } else {
                             // 打开 UserDashboard
-                            new AdminDashboard(username).setVisible(true);
+                            showWelcomeDialog(username,avatarPath);
+                            new UserDashboard(username).setVisible(true);
                         }
                         dispose(); // 关闭登录窗口
                     } else {
@@ -147,39 +156,70 @@ public class LoginFrame extends JFrame {
                 }
             }
         });
-//        txtUsername.addFocusListener(new FocusAdapter() {
-//            @Override
-//            public void focusLost(FocusEvent e) {
-//                String username = txtUsername.getText();
-//                String avatarPath = UserDAO.getAvatarPath(username);
-//                updateAvatar(avatarPath);
-//            }
-//        });
+        txtUsername.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                String username = txtUsername.getText();
+                String avatarPath = UserDAO.getAvatarPath(username);
+                updateAvatar(avatarPath);
+            }
+        });
 
     }
     private void updateAvatar(String avatarPath) {
         if (avatarPath != null && !avatarPath.isEmpty()) {
             try {
                 BufferedImage avatarImage = ImageIO.read(new File(avatarPath));
-                Image scaledImage = avatarImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                Image scaledImage = avatarImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
                 lblAvatar.setIcon(new ImageIcon(scaledImage));
             } catch (IOException ex) {
                 lblAvatar.setIcon(null);
                 lblAvatar.setText("No avatar");
-                // 处理异常，如显示默认头像
             }
         } else {
             lblAvatar.setIcon(null);
             lblAvatar.setText("No avatar");
-            // 可能显示一个默认头像
         }
     }
 
+    private void showWelcomeDialog(String userName, String avatarPath) {
+        JDialog welcomeDialog = new JDialog(this, "欢迎", true);
+        welcomeDialog.setLayout(new BorderLayout());
+        welcomeDialog.setSize(300, 200);
+        welcomeDialog.setLocationRelativeTo(null);
+
+        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
+        welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
+
+        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
+        JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        welcomeDialog.add(imageLabel, BorderLayout.CENTER);
+        JButton okButton = new JButton("确定");
+        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
+        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                welcomeDialog.dispose();
+                setVisible(true); // Show the main UserDashboard frame
+            }
+        });
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
+        buttonPanel.add(okButton);
+        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
+
+        welcomeDialog.setVisible(true);
+    }
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
                 new LoginFrame().setVisible(true);
             } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         });

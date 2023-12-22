@@ -40,7 +40,7 @@ public class UserDashboard extends JFrame {
         createDiaryModel();
         this.username=username;
         String avatarPath= userDAO.getAvatarPath(username);
-        showWelcomeDialog(username, avatarPath);
+        //showWelcomeDialog(username, avatarPath);
     }
     private void createUI() {
         setTitle("用户主页");
@@ -143,37 +143,37 @@ public class UserDashboard extends JFrame {
         dispose();
     }
 
-    private void showWelcomeDialog(String userName, String avatarPath) {
-        JDialog welcomeDialog = new JDialog(this, "欢迎", true);
-        welcomeDialog.setLayout(new BorderLayout());
-        welcomeDialog.setSize(300, 200);
-        welcomeDialog.setLocationRelativeTo(null);
-
-        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
-        welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
-
-        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
-        JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
-        imageLabel.setHorizontalAlignment(JLabel.CENTER);
-        welcomeDialog.add(imageLabel, BorderLayout.CENTER);
-        JButton okButton = new JButton("确定");
-        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
-        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
-        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                welcomeDialog.dispose();
-                setVisible(true); // Show the main UserDashboard frame
-            }
-        });
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
-        buttonPanel.add(okButton);
-        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
-
-        welcomeDialog.setVisible(true);
-    }
+//    private void showWelcomeDialog(String userName, String avatarPath) {
+//        JDialog welcomeDialog = new JDialog(this, "欢迎", true);
+//        welcomeDialog.setLayout(new BorderLayout());
+//        welcomeDialog.setSize(300, 200);
+//        welcomeDialog.setLocationRelativeTo(null);
+//
+//        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
+//        welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
+//
+//        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
+//        JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+//        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+//        welcomeDialog.add(imageLabel, BorderLayout.CENTER);
+//        JButton okButton = new JButton("确定");
+//        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+//        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
+//        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
+//        okButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                welcomeDialog.dispose();
+//                setVisible(true); // Show the main UserDashboard frame
+//            }
+//        });
+//
+//        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
+//        buttonPanel.add(okButton);
+//        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
+//
+//        welcomeDialog.setVisible(true);
+//    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

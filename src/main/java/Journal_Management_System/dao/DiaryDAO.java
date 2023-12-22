@@ -125,6 +125,28 @@ public class DiaryDAO {
         return diaries;
     }
 
+    public List<DiaryEntry> getAllDiaries() {
+        List<DiaryEntry> diaries = new ArrayList<>();
+        String sql = "SELECT id, user_id, title, content, created_time, lastcommit_time FROM journals";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    DiaryEntry diary = new DiaryEntry(
+                            rs.getInt("id"),
+                            rs.getInt("user_id"),
+                            rs.getString("title"),
+                            rs.getString("content"),
+                            rs.getString("created_time"),
+                            rs.getString("lastcommit_time")
+                    );
+                    diaries.add(diary);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return diaries;
+    }
     public List<DiaryEntry> getDiariesByUsername(String username) {
         int userId = getUserIdByUsername(username);
         if (userId == -1) {

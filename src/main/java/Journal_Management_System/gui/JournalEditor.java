@@ -52,11 +52,11 @@ public class JournalEditor extends JFrame {
         publishButton = new JButton("保存");
         deleteButton = new JButton("删除");
         dashboardButton = new JButton("Dashboard");
-        viewerButton = new JButton("Viewer");
+        //viewerButton = new JButton("Viewer");
         rightPanel.add(publishButton);
         rightPanel.add(deleteButton);
         rightPanel.add(dashboardButton);
-        rightPanel.add(viewerButton);
+        //rightPanel.add(viewerButton);
         add(rightPanel, BorderLayout.EAST);
 
         // 底部：日志信息
@@ -99,12 +99,12 @@ public class JournalEditor extends JFrame {
             }
         });
 
-        viewerButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                goToViewer();
-            }
-        });
+//        viewerButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                goToViewer();
+//            }
+//        });
 
 
     }
@@ -115,7 +115,7 @@ public class JournalEditor extends JFrame {
         if (diaryEntry != null) {
             titleField.setText(diaryEntry.getTitle());
             textArea.setText(diaryEntry.getContent());
-            lastPublishedLabel.setText(diaryEntry.getLastCommitTime());
+            lastPublishedLabel.setText("最后修改时间："+diaryEntry.getLastCommitTime());
         }
     }
 
@@ -139,6 +139,7 @@ public class JournalEditor extends JFrame {
             );
             diaryDAO.addDiary(newDiaryEntry);
             JOptionPane.showMessageDialog(this, "日志已创建");
+            lastPublishedLabel.setText("最后修改时间："+newDiaryEntry.getLastCommitTime());
         } else {
             // 更新现有日志
             DiaryEntry existingDiaryEntry = new DiaryEntry(
@@ -151,6 +152,7 @@ public class JournalEditor extends JFrame {
             );
             diaryDAO.updateDiary(existingDiaryEntry);
             JOptionPane.showMessageDialog(this, "日志已更新");
+            lastPublishedLabel.setText("最后修改时间："+existingDiaryEntry.getLastCommitTime());
         }
 
     }
@@ -181,9 +183,9 @@ public class JournalEditor extends JFrame {
         dispose();
     }
 
-    private void goToViewer() {
-        // 跳转到Viewer界面的逻辑
-    }
+//    private void goToViewer() {
+//        // 跳转到Viewer界面的逻辑
+//    }
     //TODO:连接到数据库
 
     public static void main(String[] args) {

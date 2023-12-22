@@ -40,15 +40,15 @@ public class AdminDashboard extends JFrame {
         createDiaryModel();
         this.username=username;
         String avatarPath= userDAO.getAvatarPath(username);
-        showWelcomeDialog(username, avatarPath);
+        //showWelcomeDialog(username, avatarPath);
     }
     private void createUI() {
-        setTitle("用户主页");
+        setTitle("管理员主页");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JButton viewDiariesButton = new JButton("查看我的日志");
+        JButton viewDiariesButton = new JButton("查看所有用户日志");
         viewDiariesButton.addActionListener(e -> viewAllDiaries());
 
         JButton publishDiaryButton = new JButton("发布日志");
@@ -70,7 +70,7 @@ public class AdminDashboard extends JFrame {
     }
 
     private void createDiaryModel() {
-        String[] columnNames = {"标题", "内容", "创建时间", "最后发表时间"};
+        String[] columnNames = {"id","用户名","标题", "内容", "创建时间", "最后发表时间"};
 
         diaryModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -94,13 +94,20 @@ public class AdminDashboard extends JFrame {
         diariesDialog.setLayout(new BorderLayout());
         diariesDialog.setSize(800, 600);
         diariesDialog.setLocationRelativeTo(this);
-        int userId = userDAO.getUserIdByUsername(username);
-        List<DiaryEntry> diaries = diaryDAO.getDiariesByUserId(userId);
-        diaryModel.setRowCount(0); // 清空表格模型的现有数据
-
+//        int userId = userDAO.getUserIdByUsername(username);
+//        List<DiaryEntry> diaries = diaryDAO.getDiariesByUserId(userId);
+//        diaryModel.setRowCount(0); // 清空表格模型的现有数据
+//
+//        for (DiaryEntry diary : diaries) {
+//            diaryModel.addRow(new Object[]{diary.getId(),diary.getTitle(), diary.getContent(), diary.getCreatedTime(), diary.getLastCommitTime()});
+//        }
+        diaryModel.setRowCount(0);
+        List<DiaryEntry> diaries = diaryDAO.getAllDiaries();
         for (DiaryEntry diary : diaries) {
-            diaryModel.addRow(new Object[]{diary.getId(),diary.getTitle(), diary.getContent(), diary.getCreatedTime(), diary.getLastCommitTime()});
+            String username = userDAO.getUsernameById(diary.getUserId());
+            diaryModel.addRow(new Object[]{diary.getId(),username, diary.getTitle(), diary.getContent(), diary.getCreatedTime(), diary.getLastCommitTime()});
         }
+
         JButton editButton = new JButton("编辑日志");
         editButton.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
@@ -143,37 +150,37 @@ public class AdminDashboard extends JFrame {
         dispose();
     }
 
-    private void showWelcomeDialog(String userName, String avatarPath) {
-        JDialog welcomeDialog = new JDialog(this, "欢迎", true);
-        welcomeDialog.setLayout(new BorderLayout());
-        welcomeDialog.setSize(300, 200);
-        welcomeDialog.setLocationRelativeTo(null);
-
-        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
-        welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
-
-        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
-        JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
-        imageLabel.setHorizontalAlignment(JLabel.CENTER);
-        welcomeDialog.add(imageLabel, BorderLayout.CENTER);
-        JButton okButton = new JButton("确定");
-        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
-        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
-        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                welcomeDialog.dispose();
-                setVisible(true); // Show the main UserDashboard frame
-            }
-        });
-
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
-        buttonPanel.add(okButton);
-        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
-
-        welcomeDialog.setVisible(true);
-    }
+//    private void showWelcomeDialog(String userName, String avatarPath) {
+//        JDialog welcomeDialog = new JDialog(this, "欢迎", true);
+//        welcomeDialog.setLayout(new BorderLayout());
+//        welcomeDialog.setSize(300, 200);
+//        welcomeDialog.setLocationRelativeTo(null);
+//
+//        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
+//        welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
+//
+//        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
+//        JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
+//        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+//        welcomeDialog.add(imageLabel, BorderLayout.CENTER);
+//        JButton okButton = new JButton("确定");
+//        okButton.setPreferredSize(new Dimension(100, 30)); // Set preferred size
+//        okButton.setHorizontalAlignment(SwingConstants.CENTER); // Center the text
+//        okButton.setMargin(new Insets(5, 5, 5, 5)); // Set margin for padding
+//        okButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                welcomeDialog.dispose();
+//                setVisible(true); // Show the main UserDashboard frame
+//            }
+//        });
+//
+//        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
+//        buttonPanel.add(okButton);
+//        welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
+//
+//        welcomeDialog.setVisible(true);
+//    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {

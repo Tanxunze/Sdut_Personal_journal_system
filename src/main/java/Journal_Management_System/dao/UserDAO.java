@@ -89,5 +89,18 @@ public class UserDAO {
         }
         return -1; // 用户不存在时返回 -1
     }
-
+    public String getUsernameById(int userId) {
+        String sql = "SELECT username FROM users WHERE id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("username");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // 如果用户ID不存在，返回null
+    }
 }
