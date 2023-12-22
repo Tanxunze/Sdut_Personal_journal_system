@@ -18,7 +18,6 @@ public class DiaryEntry {
         this.lastCommitTime = lastCommitTime;
     }
 
-    // Getters and Setters
 
     public int getId() {
         return id;

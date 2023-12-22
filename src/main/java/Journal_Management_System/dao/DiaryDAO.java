@@ -73,7 +73,7 @@ public class DiaryDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; // 或抛出异常
+        return -1;
     }
 
     public DiaryEntry getDiaryById(int diaryId) {
@@ -106,7 +106,7 @@ public class DiaryDAO {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     String content = rs.getString("content");
-                    // 创建内容摘要，例如取前100个字符
+                    //取前100个字符
                     String summary = content.length() > 100 ? content.substring(0, 100) + "..." : content;
 
                     diaries.add(new DiaryEntry(
@@ -150,7 +150,7 @@ public class DiaryDAO {
     public List<DiaryEntry> getDiariesByUsername(String username) {
         int userId = getUserIdByUsername(username);
         if (userId == -1) {
-            return new ArrayList<>(); // 或处理错误情况
+            return new ArrayList<>();
         }
         return getDiariesByUserId(userId);
     }

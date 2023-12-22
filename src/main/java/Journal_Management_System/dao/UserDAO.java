@@ -33,10 +33,10 @@ public class UserDAO {
         String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, username);
-            pstmt.setString(2, password); // 在实际应用中，密码应该是加密过的
+            pstmt.setString(2, password);
 
             try (ResultSet rs = pstmt.executeQuery()) {
-                return rs.next(); // 如果找到匹配的用户，返回true
+                return rs.next();
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -66,7 +66,7 @@ public class UserDAO {
         String sql = "INSERT INTO users (username, password) VALUES (?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, username);
-            pstmt.setString(2, password); // 密码应该是加密过的
+            pstmt.setString(2, password);
 
             return pstmt.executeUpdate() == 1;
         } catch (SQLException e) {
