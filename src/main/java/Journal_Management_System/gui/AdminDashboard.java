@@ -1,10 +1,18 @@
 package main.java.Journal_Management_System.gui;
 
+import main.java.Journal_Management_System.dao.DiaryDAO;
+import main.java.Journal_Management_System.dao.DiaryEntry;
+import main.java.Journal_Management_System.dao.UserDAO;
+import main.java.Journal_Management_System.util.DatabaseConnection;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
 
 class ImagePanel1 extends JPanel {
     private Image image;
@@ -23,24 +31,34 @@ class ImagePanel1 extends JPanel {
 public class AdminDashboard extends JFrame {
     private DefaultTableModel diaryModel; // 用于存储日志信息的表格模型
     private JTable table; // 作为成员变量声明
-
-    public AdminDashboard() {
+    private String username;
+    Connection connection= DatabaseConnection.getCon();
+    private UserDAO userDAO=new UserDAO(connection);
+    private DiaryDAO diaryDAO=new DiaryDAO(connection);
+    public AdminDashboard(String username) throws SQLException {
         createUI();
         createDiaryModel();
-        showWelcomeDialog("用户名", "src/main/java/resources/imges/avatar.jpg");
+        this.username=username;
+        String avatarPath= userDAO.getAvatarPath(username);
+        showWelcomeDialog(username, avatarPath);
     }
-
     private void createUI() {
-        setTitle("管理员主页");
+        setTitle("用户主页");
         setSize(800, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JButton viewDiariesButton = new JButton("查看所有用户日志");
+        JButton viewDiariesButton = new JButton("查看我的日志");
         viewDiariesButton.addActionListener(e -> viewAllDiaries());
 
         JButton publishDiaryButton = new JButton("发布日志");
-        publishDiaryButton.addActionListener(e -> showPublishDialog());
+        publishDiaryButton.addActionListener(e -> {
+            try {
+                showPublishDialog();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
 
         JPanel topPanel = new JPanel();
         topPanel.add(viewDiariesButton);
@@ -52,7 +70,7 @@ public class AdminDashboard extends JFrame {
     }
 
     private void createDiaryModel() {
-        String[] columnNames = {"用户名","标题", "内容", "创建时间", "最后发表时间"};
+        String[] columnNames = {"标题", "内容", "创建时间", "最后发表时间"};
 
         diaryModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -61,26 +79,38 @@ public class AdminDashboard extends JFrame {
                 return false;
             }
         };
-
         table = new JTable(diaryModel);
         table.getTableHeader().setResizingAllowed(false);
         table.getTableHeader().setReorderingAllowed(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.getColumnModel().getColumn(0).setMinWidth(0);
+        table.getColumnModel().getColumn(0).setMaxWidth(0);
+        table.getColumnModel().getColumn(0).setWidth(0);
     }
 
 
     private void viewAllDiaries() {
-        JDialog diariesDialog = new JDialog(this, "我的所有日志", true);
+        JDialog diariesDialog = new JDialog(this, "所有用户日志", true);
         diariesDialog.setLayout(new BorderLayout());
         diariesDialog.setSize(800, 600);
         diariesDialog.setLocationRelativeTo(this);
+        int userId = userDAO.getUserIdByUsername(username);
+        List<DiaryEntry> diaries = diaryDAO.getDiariesByUserId(userId);
+        diaryModel.setRowCount(0); // 清空表格模型的现有数据
 
+        for (DiaryEntry diary : diaries) {
+            diaryModel.addRow(new Object[]{diary.getId(),diary.getTitle(), diary.getContent(), diary.getCreatedTime(), diary.getLastCommitTime()});
+        }
         JButton editButton = new JButton("编辑日志");
         editButton.addActionListener(e -> {
             int selectedRow = table.getSelectedRow();
             if (selectedRow >= 0) {
                 // 打开编辑日志的窗口或对话框
-                editDiary(selectedRow);
+                try {
+                    editDiary(selectedRow);
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
             } else {
                 JOptionPane.showMessageDialog(diariesDialog, "请选择一条日志进行编辑");
             }
@@ -94,47 +124,35 @@ public class AdminDashboard extends JFrame {
         diariesDialog.setVisible(true);
     }
 
-    private void editDiary(int selectedRow) {
+    private void editDiary(int selectedRow) throws SQLException {
         // TODO: 实现编辑日志的逻辑
         // 例如，打开一个新的窗口或对话框，用于编辑选中的日志
-        new JournalEditor().setVisible(true);
+        if (selectedRow != -1) {
+            int selectedDiaryId = (Integer) table.getModel().getValueAt(selectedRow, 0); // 0 是日志ID所在的列
+            DiaryEntry selectedDiary = diaryDAO.getDiaryById(selectedDiaryId);
+            new JournalEditor(username,selectedDiaryId).setVisible(true);
+            dispose();
+        } else {
+            // 没有选中任何行的处理
+        }
+    }
+
+
+    private void showPublishDialog() throws SQLException {
+        new JournalEditor(username,-1).setVisible(true);
         dispose();
-
     }
 
-    private void showPublishDialog() {
-        JDialog publishDialog = new JDialog(this, "发布日志", true);
-        publishDialog.setLayout(new BorderLayout());
-        publishDialog.setSize(400, 300);
-        publishDialog.setLocationRelativeTo(this);
-
-        JTextArea contentArea = new JTextArea();
-        JButton publishButton = new JButton("发布");
-
-        publishButton.addActionListener(e -> {
-            String content = contentArea.getText();
-            String title = "日志标题"; // 这里可以添加一个标题输入框或以其他方式获取
-            String createTime = "创建时间"; // 获取当前时间
-            String lastPublishTime = "最后发表时间"; // 获取当前时间
-            diaryModel.addRow(new Object[]{title, content, createTime, lastPublishTime});
-            publishDialog.dispose();
-        });
-
-        publishDialog.add(new JScrollPane(contentArea), BorderLayout.CENTER);
-        publishDialog.add(publishButton, BorderLayout.SOUTH);
-        publishDialog.setVisible(true);
-    }
-
-    private void showWelcomeDialog(String userName, String imagePath) {
+    private void showWelcomeDialog(String userName, String avatarPath) {
         JDialog welcomeDialog = new JDialog(this, "欢迎", true);
         welcomeDialog.setLayout(new BorderLayout());
         welcomeDialog.setSize(300, 200);
         welcomeDialog.setLocationRelativeTo(null);
 
-        JLabel welcomeLabel = new JLabel("欢迎, Administer!", JLabel.CENTER); // 硬编码用户名
+        JLabel welcomeLabel = new JLabel("欢迎, " + userName + "!", JLabel.CENTER);
         welcomeDialog.add(welcomeLabel, BorderLayout.NORTH);
 
-        ImageIcon icon = new ImageIcon(imagePath);
+        ImageIcon icon = (avatarPath != null) ? new ImageIcon(avatarPath) : new ImageIcon(/* 默认头像路径 */);
         JLabel imageLabel = new JLabel(new ImageIcon(icon.getImage().getScaledInstance(100, 100, Image.SCALE_DEFAULT)));
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomeDialog.add(imageLabel, BorderLayout.CENTER);
@@ -149,17 +167,19 @@ public class AdminDashboard extends JFrame {
                 setVisible(true); // Show the main UserDashboard frame
             }
         });
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // Create a panel for the button
         buttonPanel.add(okButton);
         welcomeDialog.add(buttonPanel, BorderLayout.SOUTH); // Add the button panel
+
         welcomeDialog.setVisible(true);
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            AdminDashboard adminDashboard = new AdminDashboard();
-//            adminDashboard.showWelcomeDialog("Administer", "src/main/java/resources/imges/avatar.jpg");
-            adminDashboard.setVisible(true);
+            //UserDashboard userDashboard = new UserDashboard();
+//            userDashboard.showWelcomeDialog("用户名", "src/main/java/resources/imges/avatar.jpg");
+            //userDashboard.setVisible(true);
         });
-
     }
 }

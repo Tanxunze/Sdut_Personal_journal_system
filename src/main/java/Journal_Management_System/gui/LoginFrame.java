@@ -2,7 +2,6 @@ package main.java.Journal_Management_System.gui;
 
 import main.java.Journal_Management_System.dao.UserDAO;
 import main.java.Journal_Management_System.server.ClientHandler;
-import main.java.Journal_Management_System.server.Server;
 import main.java.Journal_Management_System.util.Request;
 import main.java.Journal_Management_System.util.Response;
 
@@ -12,8 +11,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -104,10 +101,10 @@ public class LoginFrame extends JFrame {
                         String role = (String) response.getData().get("role");
                         if ("admin".equals(role)) {
                             // 打开 AdminDashboard
-                           new AdminDashboard().setVisible(true);
+                           new AdminDashboard(username).setVisible(true);
                         } else {
                             // 打开 UserDashboard
-                            new UserDashboard().setVisible(true);
+                            new AdminDashboard(username).setVisible(true);
                         }
                         dispose(); // 关闭登录窗口
                     } else {
