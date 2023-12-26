@@ -160,7 +160,7 @@ public class JournalEditor extends JFrame {
                     new Timestamp(System.currentTimeMillis()).toString() // 更新最后更新时间
             );
             diaryDAO.updateDiary(existingDiaryEntry);
-            JOptionPane.showMessageDialog(this, "日志已更新");
+            JOptionPane.showMessageDialog(this, "抱歉，为确保隐私安全，即使管理员也无法修改日志！");
             lastPublishedLabel.setText("最后修改时间："+existingDiaryEntry.getLastCommitTime());
         }
 
@@ -194,8 +194,14 @@ public class JournalEditor extends JFrame {
 
 
         private void goToDashboard() throws SQLException {
-        new AdminDashboard(username).setVisible(true);
-        dispose();
+            String role=userDAO.getUserRole(username);
+            if(role.equals("admin")){
+                new AdminDashboard(username).setVisible(true);
+            }
+            else{
+                new UserDashboard(username).setVisible(true);
+            }
+            dispose();
     }
 
 
